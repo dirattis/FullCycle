@@ -9,6 +9,8 @@ services:
       build:
         context: node
       container_name: app
+      entrypoint: wait-for db:3306 -t 20 -- docker-entrypoint.sh   
+      command: node index.js   
       tty: true
       networks:
       - nodenet
