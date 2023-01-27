@@ -10,14 +10,14 @@ services:
         context: node
       container_name: app
       entrypoint: wait-for db:3306 -t 20 -- docker-entrypoint.sh   
-      command: node index.js   
+      command: bash -c "npm install && node index.js"
       tty: true
       networks:
       - nodenet
       # ports:
       # - "3000:3000"
-      # volumes:
-      # - ./node:/usr/src/app  
+      volumes:
+      - ./node:/usr/src/app  
       depends_on:
       - db
 

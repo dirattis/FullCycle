@@ -14,16 +14,23 @@ const config = {
 const htmlUpResponse = `<h1>Full Cycle Rocks!</h1><br />
                         <p style='margin-left: 15px'>Insira um nome:</p>
                           <form action='insert' method='post'>
-                            <input type='text' name='name' style='margin-left: 15px'/>
+                            <input type='text' name='name' style='margin-left: 15px' maxlength='50' size='50'/>
                             <input type='submit' value='Inserir'/>
                           </form>
                         <h2 style='margin-left: 15px'>Lista de Cadastrados no Banco: </h2><br />`;
 var listResponse = '';
-
+console.log("Iniciou");
+createTableIfNotExists()
 listRows();
 
 const server = http.createServer((req, res) => {   
-  
+    
+  let paths = ['/','/insert'];  
+  if(!paths.some(x => x == req.url)) { 
+    responseCallback(res);
+    return;
+  }
+
   if(req.method == 'POST') 
   {
       let body = '';
@@ -48,7 +55,7 @@ const server = http.createServer((req, res) => {
       });
   }  
   else
-  listRows(responseCallback, res);
+    listRows(responseCallback, res);
   
 });
 
@@ -89,6 +96,20 @@ function insertName(name, response){
       console.log("Registro inserido com sucesso");
       listRows(responseCallback, response);
     }
+  });
+  conn.end();
+}
+
+function createTableIfNotExists(){
+  let conn = mysql.createConnection(config);
+  const sqlCreateTable = `CREATE TABLE IF NOT EXISTS People 
+                            (Id int not null auto_increment, 
+                              Name varchar(50), 
+                              primary key(Id)
+                            );`;
+  conn.query(sqlCreateTable, function (err, result) {
+    if (err) 
+        console.log(err);    
   });
   conn.end();
 }
